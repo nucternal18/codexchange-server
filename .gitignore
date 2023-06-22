@@ -1,0 +1,11 @@
+node_modules
+# local env files
+.env
+node_modules
+Procfile
+
+# local build files
+dist
+coverage
+logs
+.DS_Store
