@@ -41,7 +41,19 @@ export const createUser = async (req: Request, res: Response) => {
 // Get all users
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const allUsers = await prisma.user.findMany();
+    const allUsers = await prisma.user.findMany({
+      include: {
+        tweets: {
+          select: {
+            id: true,
+            content: true,
+            image: true,
+            impressions: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
     res.json(allUsers);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -56,6 +68,16 @@ export const getUserById = async (req: Request, res: Response) => {
       where: {
         id: id,
       },
+      include: {
+        tweets: {
+          select: {
+            id: true,
+            content: true,
+            image: true,
+            impressions: true,
+          },
+        }
+      }
     });
     res.json(user);
   } catch (error: any) {
@@ -68,7 +90,7 @@ export const updateUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, image, bio, username } = req.body;
   try {
-    const updatedUser = await prisma.user.update({
+     await prisma.user.update({
       where: {
         id: id,
       },
@@ -79,7 +101,7 @@ export const updateUserById = async (req: Request, res: Response) => {
         username
       },
     });
-    res.json(updatedUser);
+    res.json({ message: "User updated successfully", status: "success"});
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -89,12 +111,12 @@ export const updateUserById = async (req: Request, res: Response) => {
 export const deleteUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const deletedUser = await prisma.user.delete({
+     await prisma.user.delete({
       where: {
         id: id,
       },
     });
-    res.json(deletedUser);
+    res.json({ message: "User deleted successfully", status: "success"});
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
