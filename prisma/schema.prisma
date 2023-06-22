@@ -6,6 +6,46 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String   @unique
+  name    String?
+  image     String?
+  bio     String?
+  username String   @unique
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tweets  Tweet[]
+}
+
+model Tweet {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  image   String?
+  author  User     @relation(fields: [authorId], references: [id])
+  authorId String  @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  impressions Int @default(0)
+}
+
+model Bookmarks {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  tweetId String
+  userId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Follows {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId String
+  followingId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
