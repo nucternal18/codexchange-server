@@ -16,11 +16,25 @@ model User {
   name    String?
   image     String?
   bio     String?
-  username String   @unique
+  username String?   @unique
   isVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tweets  Tweet[]
+  tokens  Token[]
+  bookmarks Bookmarks[]
+}
+
+model Token {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @db.ObjectId
+  user   User     @relation(fields: [userId], references: [id])
+  emailToken   String?   @unique
+  type   TokenType
+  valid  Boolean @default(true)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tweet {
@@ -37,7 +51,8 @@ model Tweet {
 model Bookmarks {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   tweetId String
-  userId  String
+  userId  String @db.ObjectId
+  user   User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -48,4 +63,9 @@ model Follows {
   followingId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum TokenType {
+  EMAIL
+  API
 }
