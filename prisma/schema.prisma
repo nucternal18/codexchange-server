@@ -30,6 +30,7 @@ model Token {
   userId  String  @db.ObjectId
   user   User     @relation(fields: [userId], references: [id])
   emailToken   String?   @unique
+  oneTimeCode String?   @unique
   type   TokenType
   valid  Boolean @default(true)
   expiresAt DateTime

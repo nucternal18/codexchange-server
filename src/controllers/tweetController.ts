@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { RequestWithUser } from "../middleware/authMiddleware";
 
 const prisma = new PrismaClient();
 
 // Create a new tweet
-export const createTweet = async (req: Request, res: Response) => {
-  const { content, userId, image } = req.body;
+export const createTweet = async (req: RequestWithUser, res: Response) => {
+  const { content, image } = req.body;
+  const userId = req.user?.id;
 
   try {
     const newTweet = await prisma.tweet.create({
@@ -99,7 +101,7 @@ export const updateTweetById = async (req: Request, res: Response) => {
 export const deleteTweetById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const deletedTweet = await prisma.tweet.delete({
+     await prisma.tweet.delete({
       where: {
         id: id,
       },

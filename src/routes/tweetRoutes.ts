@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 
 import { createTweet, getAllTweets, getTweetById, updateTweetById, deleteTweetById } from '../controllers/tweetController';
+import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
 

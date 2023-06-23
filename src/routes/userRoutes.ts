@@ -7,6 +7,7 @@ import {
   updateUserById,
   deleteUserById,
 } from "../controllers/userController";
+import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
 

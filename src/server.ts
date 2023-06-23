@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import userRouter from "./routes/userRoutes";
 import tweetRouter from "./routes/tweetRoutes";
 import authRoutes from "./routes/authRoutes";
+import { protect } from "./middleware/authMiddleware";
 
 dotenv.config();
 
@@ -20,11 +21,10 @@ app.get("/api/v1", (req: Request, res: Response) => {
 app.use("/api/v1/auth", authRoutes);
 
 // Mount the userRouter on the /users path
-app.use("/api/v1/users", userRouter);
+app.use("/api/v1/users", protect, userRouter);
 
 // Mount the tweetRouter on the /tweets path
-app.use("/api/v1/tweets", tweetRouter);
-
+app.use("/api/v1/tweets", protect, tweetRouter);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
