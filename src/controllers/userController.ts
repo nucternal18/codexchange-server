@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { RequestWithUser } from "../middleware/authMiddleware";
+
 
 const prisma = new PrismaClient();
 
@@ -107,6 +109,13 @@ export const updateUserById = async (req: Request, res: Response) => {
   }
 };
 
+// get user details
+export const getMe = async (req: RequestWithUser, res: Response) => {
+  const user = req.user;
+  res.json(user);
+};
+
+
 // Delete a user by id
 export const deleteUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -121,3 +130,4 @@ export const deleteUserById = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+

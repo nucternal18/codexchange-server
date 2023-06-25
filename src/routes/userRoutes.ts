@@ -1,15 +1,18 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 
 import {
   createUser,
   getAllUsers,
   getUserById,
+  getMe,
   updateUserById,
   deleteUserById,
 } from "../controllers/userController";
-import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
+
+// Get logged in user profile
+router.get("/me", getMe);
 
 // Create a new user
 router.post("/", createUser);

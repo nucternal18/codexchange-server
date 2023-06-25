@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prismadb";
 import dotenv from "dotenv";
+import { RequestWithUser } from "../middleware/authMiddleware";
 
 dotenv.config();
 
@@ -85,22 +86,18 @@ export const authenticate = async (req: Request, res: Response) => {
 
     // Check if the token exists and is valid
     if (!token || !token.valid) {
-      return res
-        .status(400)
-        .json({
-          status: "failed",
-          message: "Unauthorized. Invalid one-time code.",
-        });
+      return res.status(400).json({
+        status: "failed",
+        message: "Unauthorized. Invalid one-time code.",
+      });
     }
 
     // Check if the token has expired
     if (token.expiresAt < new Date()) {
-      return res
-        .status(401)
-        .json({
-          status: "failed",
-          message: "Unauthorized. One-time code expired.",
-        });
+      return res.status(401).json({
+        status: "failed",
+        message: "Unauthorized. One-time code expired.",
+      });
     }
 
     // Check if the user email in the token matches the email in the request body
@@ -142,6 +139,14 @@ export const authenticate = async (req: Request, res: Response) => {
     // Generate a JWT accessToken
     const accessToken = generateAccessToken(apiToken.id);
 
+    //send accessToken to the client through a session cookie
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: "none",
+      secure: true,
+    });
+
     // Send the accessToken to the client
     res.status(200).json({
       status: "success",
@@ -152,5 +157,19 @@ export const authenticate = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ status: "failed", message: "Failed to authenticate user." });
+  }
+};
+
+// Logout a user by deleting the API token
+export const logout = async (req: RequestWithUser, res: Response) => {
+  try {
+    req.user = null;
+    req.headers.authorization = "";
+    res.clearCookie("accessToken");
+    res.status(204)
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ status: "failed", message: "Failed to logout user." });
   }
 };

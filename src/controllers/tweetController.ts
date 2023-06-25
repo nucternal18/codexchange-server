@@ -47,6 +47,9 @@ export const getAllTweets = async (req: Request, res: Response) => {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     res.json(allTweets);
   } catch (error: any) {

@@ -54,6 +54,7 @@ export async function protect(
       );
     }
 
+
     try {
       const decoded = await (<any>verifyAccessToken(token));
 
@@ -102,3 +103,4 @@ export async function protect(
     }
   }
 }
+
